@@ -489,8 +489,12 @@ def _(expr, assumptions):
 def _Imaginary_number(expr, assumptions):
     # let as_real_imag() work first since the expression may
     # be simpler to evaluate
-    r = expr.as_real_imag()[0].evalf(2)
+    r, i = expr.as_real_imag()
+    r = r.evalf(2)
     if r._prec != 1:
+        # Check if the imaginary part is infinite
+        if ask(Q.infinite(i)):
+            return False
         return not r
     # allow None to be returned if we couldn't show for sure
     # that r was 0
@@ -512,6 +516,7 @@ def _(expr, assumptions):
     * Imaginary + Imaginary -> Imaginary
     * Imaginary + Complex   -> ?
     * Imaginary + Real      -> !Imaginary
+    * Anything + Infinity -> !Imaginary
     """
     if expr.is_number:
         return _Imaginary_number(expr, assumptions)
@@ -523,6 +528,11 @@ def _(expr, assumptions):
         elif ask(Q.real(arg), assumptions):
             reals += 1
         else:
+            finite_result = ask(Q.finite(arg), assumptions)
+            if finite_result is False:
+                return False
+            if finite_result is None:
+                return None
             break
     else:
         if reals == 0:
