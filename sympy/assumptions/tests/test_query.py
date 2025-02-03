@@ -2428,3 +2428,5 @@ def test_issue_25221():
 def test_issues_27449():
     assert ask(Q.imaginary(I * oo)) is False
     assert ask(Q.imaginary(3*I * oo)) is False
+    assert ask(Q.imaginary(Add(1, oo*I, evaluate=False))) is False
+    assert ask(Q.imaginary(Add(I, oo, evaluate=False))) is False
