@@ -489,14 +489,19 @@ def _(expr, assumptions):
 def _Imaginary_number(expr, assumptions):
     # let as_real_imag() work first since the expression may
     # be simpler to evaluate
-    if expr.is_real:
-        return False
-    if expr.is_number:
-            r = (expr / I).simplify()
-            if r.is_real:
-                return True
-            if r.is_real is False:
-                return False
+    if isinstance(expr, Pow) and expr.base == I:
+        exp = expr.exp
+        if exp.is_Add:
+            term = None
+            for t in exp.args:
+                if I not in t.free_symbols:
+                    term = t
+                    break
+
+            if term is not None and term.is_number:
+                mod_4 = term % 4
+                return bool(mod_4 == 1 or mod_4 == 3)
+    return expr.is_imaginary
     # allow None to be returned if we couldn't show for sure
     # that r was 0
 
