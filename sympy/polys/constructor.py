@@ -59,7 +59,7 @@ def _construct_simple(coeffs, opt):
 
     # Use the maximum precision of all coefficients for the RR or CC
     # precision
-    max_prec = max(c._prec for c in float_numbers) if float_numbers else 53
+    max_prec = max([c._prec for c in float_numbers] + [53]) if float_numbers else 53
 
     if algebraics:
         domain, result = _construct_algebraic(coeffs, opt)

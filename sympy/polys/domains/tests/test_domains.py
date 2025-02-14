@@ -7,9 +7,11 @@ from sympy.core.numbers import (AlgebraicNumber, E, Float, I, Integer,
 from sympy.core.singleton import S
 from sympy.functions.elementary.exponential import exp
 from sympy.functions.elementary.miscellaneous import sqrt
-from sympy.functions.elementary.trigonometric import sin
+from sympy.functions.elementary.trigonometric import sin, cos
 from sympy.polys.polytools import Poly
 from sympy.abc import x, y, z
+
+from sympy.core.symbol import symbols
 
 from sympy.polys.domains import (ZZ, QQ, RR, CC, FF, GF, EX, EXRAW, ZZ_gmpy,
     ZZ_python, QQ_gmpy, QQ_python)
@@ -31,6 +33,8 @@ from sympy.polys.polyerrors import (
     CoercionFailed,
     NotInvertible,
     DomainError)
+
+from sympy.printing import srepr
 
 from sympy.testing.pytest import raises, warns_deprecated_sympy
 
@@ -1414,3 +1418,22 @@ def test_exsqrt():
     assert F7.exsqrt(F7(3)) is None
     assert F7.is_square(F7(0)) is True
     assert F7.exsqrt(F7(0)) == F7(0)
+
+
+def test_poly_precision():
+
+    x = symbols('x')
+    z = (cos(1)**2 + sin(1)**2 - 1).n()
+    p = Poly(2*x + z)
+
+    coeff_x = p.coeffs()[0]
+    constant_term = p.coeffs()[1]
+
+    assert isinstance(coeff_x, Float) and coeff_x._prec == 53
+    assert isinstance(constant_term, Float) and constant_term._prec == 53
+
+    actual_srepr = srepr(p)
+
+    assert "Mul(Float('2.0', precision=53), Symbol('x'))" in actual_srepr
+    assert "Float('" in actual_srepr and "precision=53)" in actual_srepr
+    assert actual_srepr.endswith("Symbol('x'))")
