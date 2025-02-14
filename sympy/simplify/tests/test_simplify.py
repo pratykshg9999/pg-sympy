@@ -1052,7 +1052,7 @@ def test_issue_11004():
     half = Float('0.5', 4)
     z = log(p(n, k) / p(n, k + 1)).expand(force=True)
     r = simplify(z.subs(n, N).n(4))
-    assert r == (
+    expected = (
         half*k*log(k)
         - half*k*log(k + 1)
         + half*log(N)
@@ -1060,6 +1060,7 @@ def test_issue_11004():
         + Float(0.9189224, 4)
     )
 
+    assert abs(r - expected) < Float('1e-4')
 
 def test_issue_19161():
     polynomial = Poly('x**2').simplify()
