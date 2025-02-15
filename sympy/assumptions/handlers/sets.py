@@ -502,8 +502,6 @@ def _Imaginary_number(expr, assumptions):
                 mod_4 = term % 4
                 return bool(mod_4 == 1 or mod_4 == 3)
     return expr.is_imaginary
-    # allow None to be returned if we couldn't show for sure
-    # that r was 0
 
 @ImaginaryPredicate.register(ImaginaryUnit) # type:ignore
 def _(expr, assumptions):
